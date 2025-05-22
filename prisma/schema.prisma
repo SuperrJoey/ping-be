@@ -19,7 +19,12 @@ model User {
   username String @unique
   password String
   createdAt DateTime @default(now())
-  messages Message[] @relation("UserMessages") 
+  
+  // Message relations
+  sentMessages Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  
+  // Room relations
   rooms ChatRoom[] @relation("RoomUsers")
 }
 
@@ -28,10 +33,15 @@ model Message {
   content String
   timestamp DateTime @default(now())
   senderId String
-  sender User @relation("UserMessages", fields: [senderId], references: [id])
+  sender User @relation("SentMessages", fields: [senderId], references: [id])
 
-  roomId String
-  room ChatRoom @relation(fields: [roomId], references: [id])
+  // For direct messages
+  receiverId String?
+  receiver User? @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  // For room messages
+  roomId String?
+  room ChatRoom? @relation(fields: [roomId], references: [id])
 }
 
 model ChatRoom  {
